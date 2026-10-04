@@ -120,18 +120,28 @@ están.
    tmpfs.
 5. **Conjunto de paquetes**:
    - Conjunto base: `base base-devel linux linux-firmware sudo networkmanager
-     openssh git jq x-release btrfs-progs kitty pipewire pipewire-pulse
-     pipewire-alsa wireplumber alsa-utils sddm`, más `grub efibootmgr` para
+     openssh git jq x-release btrfs-progs xfetch-git xtop-git kitty pipewire
+     pipewire-pulse pipewire-alsa wireplumber alsa-utils sddm`, más
+     `grub efibootmgr` para
      GRUB y `cryptsetup` para LUKS. `btrfs-progs` lo requiere el motor de
-     generaciones y se instala en todos los perfiles.
+     generaciones; las herramientas de X (`xfetch`, `xtop`) se instalan en
+     todos los perfiles.
    - Perfil `full`: añade todos los paquetes del manifiesto apuntado por
      `X_PKGLIST` (por defecto `/root/x-installer/packages.x86_64`).
    - Perfil `core`: añade solo `vim zsh`.
-6. **Preparar el keyring del destino** (`pacman-key --gpgdir
-   /mnt/etc/pacman.d/gnupg --init`, `--populate archlinux`, y agregar + firmar
-   localmente `/etc/pacman.d/x-repo.pub`) y **esperar a la red** (DNS contra
+   - El perfil `full` con el escritorio Hyprland compila paquetes de AUR
+     (`quickshell-git`, `swayosd-git`, ...): dale al instalador **≥6 GB de
+     RAM**; en máquinas con poca memoria limita los jobs de build.
+6. **Preparar los keyrings** y **esperar a la red** (DNS contra
    `geo.mirror.pkgbuild.com`, hasta ~120 s). Después `pacstrap /mnt <pkgs>`
    desde los mirrors oficiales más el repositorio `[x]` firmado (`Required`).
+   - Live: se agrega y firma localmente `/etc/pacman.d/x-repo.pub`
+     (`pacman-key --init/--populate archlinux/--add/--lsign-key`). Lo
+     re-aplica al boot `x-keyring.service` porque `pacman-init.service`
+     recrea `/etc/pacman.d/gnupg` en tmpfs; `install.sh` lo repite de forma
+     idempotente antes de `pacstrap` (que verifica contra el keyring live).
+   - Destino: `pacman-key --gpgdir /mnt/etc/pacman.d/gnupg --init`,
+     `--populate archlinux`, agregar y firmar localmente la misma clave.
 7. **Instalar `x-scripts` offline**: el payload
    `packages/x-scripts-*.pkg.tar.zst` presente en el entorno en vivo se copia
    al destino y se instala con `pacman -U` dentro del chroot.
