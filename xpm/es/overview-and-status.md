@@ -55,7 +55,8 @@ ambas crates más tests de integración bajo `tests/`). Sin embargo, dentro de l
   pacman**. El consumo en los sistemas instalados se hace con pacman, no con xpm.
 - Por tanto, `xpm` **no es todavía el camino activo** en el flujo *reboot*. Es una base de
   código de tooling funcional con su propio roadmap interno, a la espera de retomarse cuando el
-  repositorio `.xp` nativo o el resolver SAT se necesiten de verdad.
+  repositorio `.xp` nativo se necesite de verdad (el resolver SAT ya está conectado a
+  `install`).
 
 El repo sigue publicando sus propios binarios como paquetes `.xp` en el árbol nativo de xpm
 (ver el README para el bootstrap de claves y el checklist de firmas), que es independiente del
@@ -98,9 +99,8 @@ Todos los subcomandos de lectura están conectados al motor. De `crates/xpm/src/
 - `sync`, `install`, `remove`, `upgrade`, `repo`, `history`, `query` (incluido `--orphans`, que
   recorre las aristas de dependencia registradas al instalar), `search`, `info` y `files`
   despachan a lógica real del motor.
-- Siguen faltando: el cableado del resolver SAT (install selecciona paquetes por nombre desde la
-  base sincronizada), la instalación local de `.xp`, `pkg=ver`, `rollback --last`,
-  `diff <generation>` y la gestión de `.pacnew`/`.pacsave`.
+- Siguen faltando: la instalación local de `.xp`, los cierres de dependencias de `upgrade`,
+  `rollback --last`, `diff <generation>` y la gestión de `.pacnew`/`.pacsave`.
 
 Ver [Uso](usage.md) para la referencia completa y [Arquitectura](architecture.md) para los
 detalles de implementación.
