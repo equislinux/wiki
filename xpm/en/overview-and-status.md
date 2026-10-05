@@ -93,12 +93,14 @@ The workspace `Cargo.toml` currently reports version `0.1.0`.
 
 ## About the command state
 
-Not every subcommand is fully wired to engine logic yet. From `crates/xpm/src/main.rs`:
+All read subcommands are wired to engine logic. From `crates/xpm/src/main.rs`:
 
-- `sync`, `install`, `remove`, `upgrade`, and `repo` dispatch to real transaction/download logic.
-- `query`, `search`, `info`, and `files` parse their arguments but currently print
-  "complete (stub)" messages; they do not yet query the databases.
+- `sync`, `install`, `remove`, `upgrade`, `repo`, `history`, `query` (including `--orphans`,
+  which walks the dependency edges recorded at install time), `search`, `info` and `files`
+  dispatch to real engine logic.
+- Still missing: SAT resolver wiring (install selects packages by name from the synced
+  database), local `.xp` install, `pkg=ver` install, `rollback --last`, `diff <generation>`
+  and `.pacnew`/`.pacsave` handling.
 
 See [Usage](usage.md) for the full reference and [Architecture](architecture.md) for the
-implementation details, including the note that the CLI install path currently selects packages
-by name from the synced database rather than through the SAT solver.
+implementation details.

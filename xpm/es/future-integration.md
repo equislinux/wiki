@@ -44,8 +44,9 @@ propio roadmap del repo y del `main.rs` actual):
    pero `install` selecciona paquetes por nombre desde la base de datos sincronizada y `upgrade`
    usa comparación de versiones simple. Un camino de install/upgrade que resuelva de verdad el
    cierre de dependencias necesita llamar al solver.
-2. **Terminar los comandos stub.** `query`, `search`, `info` y `files` hoy solo parsean sus
-   argumentos.
+2. **Conectar el resolver y el resto de funciones de instalación.** `query` (incluido
+   `--orphans`), `search`, `info` y `files` están implementados; faltan el cableado del resolver
+   SAT, la instalación local de `.xp`, `pkg=ver`, `rollback --last` y `diff <generation>`.
 3. **Completar el endurecimiento de transacciones.** El roadmap del repo lista pendientes:
    gestión de archivos de configuración `.pacnew`/`.pacsave`, ejecución de alpm-hooks más allá de
    los scriptlets de `.INSTALL`, test end-to-end de upgrade, y tests de resolución de conflictos

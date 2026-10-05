@@ -93,15 +93,14 @@ El `Cargo.toml` del workspace reporta actualmente la versión `0.1.0`.
 
 ## Sobre el estado de los comandos
 
-No todos los subcomandos están conectados del todo con la lógica del motor. De
-`crates/xpm/src/main.rs`:
+Todos los subcomandos de lectura están conectados al motor. De `crates/xpm/src/main.rs`:
 
-- `sync`, `install`, `remove`, `upgrade` y `repo` despachan a lógica real de transacción y
-  descarga.
-- `query`, `search`, `info` y `files` parsean sus argumentos pero hoy imprimen mensajes de
-  "complete (stub)"; todavía no consultan las bases de datos.
+- `sync`, `install`, `remove`, `upgrade`, `repo`, `history`, `query` (incluido `--orphans`, que
+  recorre las aristas de dependencia registradas al instalar), `search`, `info` y `files`
+  despachan a lógica real del motor.
+- Siguen faltando: el cableado del resolver SAT (install selecciona paquetes por nombre desde la
+  base sincronizada), la instalación local de `.xp`, `pkg=ver`, `rollback --last`,
+  `diff <generation>` y la gestión de `.pacnew`/`.pacsave`.
 
 Ver [Uso](usage.md) para la referencia completa y [Arquitectura](architecture.md) para los
-detalles de implementación, incluida la nota de que el camino de instalación del CLI selecciona
-actualmente paquetes por nombre desde la base de datos sincronizada en lugar de usar el solver
-SAT.
+detalles de implementación.
