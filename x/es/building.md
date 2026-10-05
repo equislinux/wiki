@@ -103,33 +103,20 @@ Tanto `work/` como `out/` se recrean en cada construcción y están en
   (`build-*.log`).
 - Causas de fallo habituales:
   - espacio en disco insuficiente;
-  - errores en la lógica de personalización del perfil;
+  - errores en un helper en vivo o en un hook de pacman;
   - configuración de perfil inválida en `profiledef.sh`;
   - montajes obsoletos bajo `work/x86_64/airootfs` (el script intenta
     limpiarlos; si hace falta, desmonta con
     `sudo umount -R work/x86_64/airootfs`).
 
-## Construcciones WSL (scripts separados)
+## Construcciones WSL (repositorios dedicados)
 
-Los tarballs de sistema de archivos raíz para WSL se construyen con sus
-propios scripts, no con `xbuild.sh`:
+WSL no se construye desde este repositorio. El flujo canónico vive en:
 
-| Script | Salida |
-|--------|--------|
-| `sudo ./xbuildwsl.sh` | `out-wsl/x-YYYY.MM.DD.tar.gz` (gzip) |
-| `sudo ./xbuildwslc.sh` | `out-wsl/x-YYYY.MM.DD.tar.zst` (zstd; requiere `zstd`) |
+| Repositorio | Rol |
+|-------------|-----|
+| `xlnux/wsl` | `build-rootfs.sh` produce un tarball de rootfs importable (`.tar.gz` + `.sha256`); `install.ps1` lo importa en Windows. Release publicada: `v0.1.0`. |
+| `xlnux/wsl-scripts` | Aprovisionamiento en dos etapas dentro de la distro (`stage-root.sh` / `stage-user.sh`). |
 
-Ambos scripts arrancan un rootfs bajo `work-wsl/rootfs` con `pacstrap`,
-copian el overlay de `airootfs`, aplican los permisos declarados en
-`profiledef.sh`, ejecutan el paso de personalización en `arch-chroot`, limpian
-la caché de pacman y crean el tarball. Requieren un entorno tipo Arch con
-`pacstrap`/`arch-chroot` y `sudo`.
-
-Notas:
-
-- WSL no puede importar archivos `.tar.zst` directamente; descomprime primero
-  (`zstd -d`) para obtener un `.tar` y ejecuta después `wsl --import`.
-- `xbuildwslc.sh` excluye los scripts auxiliares solo-en-vivo
-  (`.automated_script.sh`, `x-postinstall.sh`) del archivo.
-- Consulta `docs/build-wsl.md` para el flujo WSL canónico y `WSL_GUIDE.md`
-  para un recorrido más largo y antiguo.
+Los dos repositorios de arriba son la fuente de verdad para construir y
+aprovisionar X en WSL.
