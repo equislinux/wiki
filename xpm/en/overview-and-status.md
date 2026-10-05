@@ -98,8 +98,7 @@ All read subcommands are wired to engine logic. From `crates/xpm/src/main.rs`:
 - `sync`, `install`, `remove`, `upgrade`, `repo`, `history`, `query` (including `--orphans`,
   which walks the dependency edges recorded at install time), `search`, `info` and `files`
   dispatch to real engine logic.
-- Still missing: local `.xp` install, `upgrade` dependency closures, `rollback --last`,
-  `diff <generation>` and `.pacnew`/`.pacsave` handling.
+- Still missing: `rollback --last`, `diff <generation>` and `.pacnew`/`.pacsave` handling.
 
 See [Usage](usage.md) for the full reference and [Architecture](architecture.md) for the
 implementation details.

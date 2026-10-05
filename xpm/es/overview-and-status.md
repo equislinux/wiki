@@ -99,8 +99,7 @@ Todos los subcomandos de lectura están conectados al motor. De `crates/xpm/src/
 - `sync`, `install`, `remove`, `upgrade`, `repo`, `history`, `query` (incluido `--orphans`, que
   recorre las aristas de dependencia registradas al instalar), `search`, `info` y `files`
   despachan a lógica real del motor.
-- Siguen faltando: la instalación local de `.xp`, los cierres de dependencias de `upgrade`,
-  `rollback --last`, `diff <generation>` y la gestión de `.pacnew`/`.pacsave`.
+- Siguen faltando: `rollback --last`, `diff <generation>` y la gestión de `.pacnew`/`.pacsave`.
 
 Ver [Uso](usage.md) para la referencia completa y [Arquitectura](architecture.md) para los
 detalles de implementación.
