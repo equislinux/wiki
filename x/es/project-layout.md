@@ -66,7 +66,7 @@ partes más relevantes:
 | `airootfs/etc/systemd/system/etc-pacman.d-gnupg.mount` | Gestión del keyring de archiso. |
 | `airootfs/root/.automated_script.sh` | Ejecutor de la automatización oficial `script=` de archiso. |
 | `airootfs/root/.zlogin` | Hook de login de zsh que inicia el instalador en TTY1. |
-| `airootfs/root/customize_airootfs.sh` | Personalización ejecutada dentro del chroot durante la build. |
+| `airootfs/etc/systemd/system/multi-user.target.wants/` | Symlinks de habilitación versionados para servicios en vivo (`x-autoinstall`, `x-keyring`, NetworkManager, ...). |
 | `airootfs/root/x-installer/` | El instalador de texto (consulta [Instalador de texto](installer.md)). |
 | `airootfs/root/x-postinstall.sh` | Script de branding de primer arranque antiguo; el instalador actual no lo invoca (el aprovisionamiento va por el payload `x-scripts`). |
 | `airootfs/usr/local/bin/` | Utilidades en vivo: `choose-mirror`, `livecd-sound`, `Installation_guide`, `xinstall`. |
