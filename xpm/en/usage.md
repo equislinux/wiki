@@ -58,16 +58,15 @@ xpm S <PACKAGES>... [OPTIONS]
 | `--as-explicit` | | Mark the package as explicitly installed |
 | `--no-optional` | | Skip optional dependencies |
 
-Behavior (from `main.rs`): the package is located by exact name across the configured
-repositories in order (first repository that provides it wins), downloaded to the cache
-directory, checked against a remote `.sig` file according to the effective `sig_level`, and
-checked against `sha256sum` when the database entry carries one. The download then becomes an
-install operation on a `Transaction`. With `--download-only` the run stops after downloading.
-Otherwise xpm asks for confirmation (unless `--no-confirm`) and then prepares and commits the
-transaction, which extracts the files and registers the package in the local database.
-
-Note: despite the "Resolving dependencies..." message, the current CLI install path does not run
-the SAT resolver; it selects the package by name from the synced database.
+Behavior (from `main.rs`): every configured sync database is loaded and the requested
+requirements (`name` or `name=version`) are solved with the SAT resolver, which picks candidates,
+honors `depends`/`conflicts` and unversioned `provides`, and returns the closure in dependency
+order. Each package is downloaded to the cache directory, checked against a remote `.sig` per the
+effective `sig_level` and against `sha256sum` when the database entry carries one, then committed
+as install operations on a `Transaction` (requested packages explicit, pulled dependencies as
+deps; `--as-deps`/`--as-explicit` override). With `--download-only` the run stops after
+downloading. Otherwise xpm asks for confirmation (unless `--no-confirm`) and the transaction
+extracts the files and registers each package in the local database.
 
 ### `remove` — Remove packages
 
@@ -101,10 +100,10 @@ xpm Su [OPTIONS]
 | `--force` | | Force reinstallation of up-to-date packages |
 | `--ignore` | | Skip specific packages (repeatable, `--ignore <PKG>`) |
 
-`upgrade` always refreshes the databases first (equivalent to `pacman -Syu`), compares installed
-versions against the remote latest entries using the ALPM-compatible version comparison, and
-plans remove+install operations per package that changed. With no packages installed it reports
-"Nothing to do".
+`upgrade` always refreshes the databases first (equivalent to `pacman -Syu`), then resolves the
+transitive closure of the packages with newer versions so new or newly-required dependencies are
+installed in the same run. Upgraded packages keep their install reason; pulled dependencies are
+recorded as deps. With no packages installed it reports "Nothing to do".
 
 ### `query` — Query the local database
 
@@ -123,8 +122,8 @@ xpm Q [FILTER] [OPTIONS]
 | `--orphans` | `-t` | Orphan packages (no longer required) |
 | `--upgrades` | `-u` | Packages with available updates |
 
-Implementation note: the flags and filter are parsed, but the handler is currently a stub that
-only prints the intended filter type.
+Implementation note: `query` (including `--orphans`) is implemented; orphan detection walks the
+dependency edges recorded in the local database at install time.
 
 ### `search` — Search packages
 
@@ -139,7 +138,8 @@ xpm Ss <QUERY> [OPTIONS]
 |------|-------|-------------|
 | `--local` | `-l` | Search in the local database instead of the sync databases |
 
-Implementation note: currently a stub.
+Implementation note: implemented — matches name, description and provides in the sync or local
+databases.
 
 ### `info` — Package information
 
@@ -154,7 +154,7 @@ xpm Si <PACKAGE> [OPTIONS]
 |------|-------|-------------|
 | `--local` | `-l` | Query the local database instead of the sync databases |
 
-Implementation note: currently a stub.
+Implementation note: implemented against the sync or local databases.
 
 ### `files` — List package files
 
@@ -165,7 +165,7 @@ xpm files <PACKAGE>
 xpm Ql <PACKAGE>
 ```
 
-Implementation note: currently a stub.
+Implementation note: implemented against the local database file lists.
 
 ### `repo` — Repository management
 
