@@ -80,7 +80,7 @@ the `build-*.log` files.
   ```ini
   [x]
   SigLevel = Never
-  Server = https://xlnux.github.io/x-repo/repo/x86_64
+  Server = https://equislinux.github.io/x-repo/repo/x86_64
   ```
 
   The *build host* uses `Never` (it may not have the project key). The **live
@@ -109,8 +109,8 @@ WSL is not built from this repository. The canonical flow lives in:
 
 | Repository | Role |
 |------------|------|
-| `xlnux/wsl` | `build-rootfs.sh` produces an importable rootfs tarball (`.tar.gz` + `.sha256`); `install.ps1` imports it on Windows. Published release: `v0.1.0`. |
-| `xlnux/wsl-scripts` | Two-stage in-distro provisioning (`stage-root.sh` / `stage-user.sh`). |
+| `equislinux/wsl` | `build-rootfs.sh` produces an importable rootfs tarball (`.tar.gz` + `.sha256`); `install.ps1` imports it on Windows. Published release: `v0.1.0`. |
+| `equislinux/wsl-scripts` | Two-stage in-distro provisioning (`stage-root.sh` / `stage-user.sh`). |
 
 The two repositories above are the source of truth for building and
 provisioning X on WSL.

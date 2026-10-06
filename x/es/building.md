@@ -83,7 +83,7 @@ Tanto `work/` como `out/` se recrean en cada construcción y están en
   ```ini
   [x]
   SigLevel = Never
-  Server = https://xlnux.github.io/x-repo/repo/x86_64
+  Server = https://equislinux.github.io/x-repo/repo/x86_64
   ```
 
   El *host de build* usa `Never` (puede no tener la clave del proyecto). El
@@ -115,8 +115,8 @@ WSL no se construye desde este repositorio. El flujo canónico vive en:
 
 | Repositorio | Rol |
 |-------------|-----|
-| `xlnux/wsl` | `build-rootfs.sh` produce un tarball de rootfs importable (`.tar.gz` + `.sha256`); `install.ps1` lo importa en Windows. Release publicada: `v0.1.0`. |
-| `xlnux/wsl-scripts` | Aprovisionamiento en dos etapas dentro de la distro (`stage-root.sh` / `stage-user.sh`). |
+| `equislinux/wsl` | `build-rootfs.sh` produce un tarball de rootfs importable (`.tar.gz` + `.sha256`); `install.ps1` lo importa en Windows. Release publicada: `v0.1.0`. |
+| `equislinux/wsl-scripts` | Aprovisionamiento en dos etapas dentro de la distro (`stage-root.sh` / `stage-user.sh`). |
 
 Los dos repositorios de arriba son la fuente de verdad para construir y
 aprovisionar X en WSL.

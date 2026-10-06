@@ -46,7 +46,7 @@ const nextConfig = {
 - `output: 'export'` produces a fully static site in `out/` — the deployment has no
   server runtime.
 - `basePath: '/x-repo'` matches the GitHub Pages project path
-  (`https://xlnux.github.io/x-repo/`). Static image references in the pages use the
+  (`https://equislinux.github.io/x-repo/`). Static image references in the pages use the
   `/x-repo/images/...` prefix accordingly.
 - Images are unoptimized because the static export cannot run the Next image
   optimizer.
@@ -87,11 +87,11 @@ A Next.js static export copies everything in `public/` into the build output
 repository files are published alongside the website:
 
 - `out/repo/x86_64/x.db`, `out/repo/x86_64/x-release-...pkg.tar.zst`, etc. map to
-  `https://xlnux.github.io/x-repo/repo/x86_64/...`.
+  `https://equislinux.github.io/x-repo/repo/x86_64/...`.
 - The `[x]` pacman repo Server is therefore
-  `https://xlnux.github.io/x-repo/repo/x86_64`.
+  `https://equislinux.github.io/x-repo/repo/x86_64`.
 - The native `.xp` endpoint under `public/x/x86_64/` is served the same way at
-  `https://xlnux.github.io/x-repo/x/x86_64/` for `xpm`.
+  `https://equislinux.github.io/x-repo/x/x86_64/` for `xpm`.
 - `public/.nojekyll` signals GitHub Pages to serve the files raw (no Jekyll
   processing).
 

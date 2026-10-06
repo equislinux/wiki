@@ -3,10 +3,10 @@
 Two dedicated repositories provide X Linux inside WSL (terminal-only, no
 graphical environment):
 
-- `xlnux/wsl` — distro side: builds the importable minimal rootfs, ships
+- `equislinux/wsl` — distro side: builds the importable minimal rootfs, ships
   `wsl.conf`/`.wslconfig` templates and a Windows PowerShell importer
   (`install.ps1`).
-- `xlnux/wsl-scripts` — setup side: friendly two-step installer
+- `equislinux/wsl-scripts` — setup side: friendly two-step installer
   (system stage as root, user stage) that sets language, keyboard, timezone,
   user with sudo and the environment variables WSL needs.
 

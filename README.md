@@ -1,7 +1,7 @@
 # X Linux Wiki
 
 Documentation for the X Linux project, aggregated from all the repositories of
-the xlnux organization. Every section exists in English (`en`) and Spanish
+the equislinux organization. Every section exists in English (`en`) and Spanish
 (`es`).
 
 ## Repositories

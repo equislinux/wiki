@@ -46,7 +46,7 @@ const nextConfig = {
 - `output: 'export'` produce un sitio totalmente estático en `out/` — el despliegue no
   tiene runtime de servidor.
 - `basePath: '/x-repo'` coincide con la ruta de proyecto de GitHub Pages
-  (`https://xlnux.github.io/x-repo/`). Las referencias a imágenes estáticas en las
+  (`https://equislinux.github.io/x-repo/`). Las referencias a imágenes estáticas en las
   páginas usan el prefijo `/x-repo/images/...` en consecuencia.
 - Las imágenes no se optimizan porque el export estático no puede ejecutar el
   optimizador de imágenes de Next.
@@ -87,11 +87,11 @@ sin cambios. Como el artefacto de deploy es `./out`, los archivos binarios del r
 commiteados se publican junto con la web:
 
 - `out/repo/x86_64/x.db`, `out/repo/x86_64/x-release-...pkg.tar.zst`, etc. se mapean a
-  `https://xlnux.github.io/x-repo/repo/x86_64/...`.
+  `https://equislinux.github.io/x-repo/repo/x86_64/...`.
 - Por tanto, el Server del repo `[x]` de pacman es
-  `https://xlnux.github.io/x-repo/repo/x86_64`.
+  `https://equislinux.github.io/x-repo/repo/x86_64`.
 - El endpoint nativo `.xp` bajo `public/x/x86_64/` se sirve igual en
-  `https://xlnux.github.io/x-repo/x/x86_64/` para `xpm`.
+  `https://equislinux.github.io/x-repo/x/x86_64/` para `xpm`.
 - `public/.nojekyll` indica a GitHub Pages que sirva los archivos tal cual (sin
   procesamiento de Jekyll).
 
