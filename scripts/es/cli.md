@@ -35,6 +35,9 @@ Los resúmenes son las cabeceras `x:summary` de cada archivo (los muestra
 | `x update` | `pacman -Syu` (privilegiado) seguido de las migraciones del usuario. |
 | `x hardware` | Ejecuta la fase de hardware (detección + módulos). Requiere root. |
 | `x info` | Muestra versión, repo, usuario e info del entorno. |
+| `x kernel list` | Lista los kernels conocidos (release, en ejecución, headers). |
+| `x kernel install <kernel>` | Instala un kernel oficial de Arch + headers vía pacman (`--no-headers`, `--yes`); los hooks de generaciones lo snapshotan. |
+| `x kernel remove <kernel>` | Elimina un kernel (`--yes`); rechaza el kernel en ejecución y el último; los snapshots archivados siguen arrancando. |
 | `x agent` / `x agent install` | Instala el bundle de IA de Xscriptor para OpenCode (`--bundle x\|dev\|full`, `--env NAME`, `--project`, `--dest DIR`, `--source DIR`, `--ref REF`, `--dry-run`, `--list`). Las fuentes se resuelven desde `X_AGENT_SOURCE`/`XSCRIPTOR_AI_DIR`, un checkout hermano `xscriptor-ai`, o una descarga pinned (`X_AGENT_REF`, cacheada en `X_AGENT_CACHE`). |
 | `x agent status` | Muestra los destinos registrados, los conteos y la fuente en uso. |
 | `x agent remove` | Elimina exactamente los archivos registrados en el manifiesto (`--dest DIR`, `--all`, `--dry-run`). |

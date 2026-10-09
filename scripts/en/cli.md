@@ -32,6 +32,9 @@ Summaries are the `x:summary` headers of each file (shown by `x help`).
 | `x update` | `pacman -Syu` (privileged) followed by the user's migrations. |
 | `x hardware` | Runs the hardware phase (detection + modules). Requires root. |
 | `x info` | Shows version, repo, user and environment info. |
+| `x kernel list` | Lists the known kernels (release, running, headers). |
+| `x kernel install <kernel>` | Installs an official Arch kernel + headers via pacman (`--no-headers`, `--yes`); the generation hooks snapshot it. |
+| `x kernel remove <kernel>` | Removes a kernel (`--yes`); refuses the running/last one; archived snapshots stay bootable. |
 | `x agent` / `x agent install` | Installs the Xscriptor AI bundle for OpenCode (`--bundle x\|dev\|full`, `--env NAME`, `--project`, `--dest DIR`, `--source DIR`, `--ref REF`, `--dry-run`, `--list`). Sources resolve from `X_AGENT_SOURCE`/`XSCRIPTOR_AI_DIR`, a sibling `xscriptor-ai` checkout, or a pinned download (`X_AGENT_REF`, cached under `X_AGENT_CACHE`). |
 | `x agent status` | Shows the recorded destinations, item counts and source in use. |
 | `x agent remove` | Removes exactly the files recorded in the manifest (`--dest DIR`, `--all`, `--dry-run`). |
