@@ -165,6 +165,8 @@ xpkg repo-remove myrepo.db.tar.zst hello --sign
 ```
 
 Adding an existing package name replaces the entry with the new version.
+Removing also syncs `history.json` when present (stale versions and packages no
+longer in the database are dropped).
 See [Repository Management](../REPOSITORY.md) for hosting instructions.
 
 ## Exit codes
@@ -185,13 +187,17 @@ During builds, these variables are set for the build scripts:
 
 | Variable | Description |
 |----------|-------------|
-| `PKGDIR` | Destination directory for installed files |
-| `SRCDIR` | Directory containing extracted source files |
+| `PKGDIR` / `pkgdir` | Destination directory for installed files |
+| `SRCDIR` / `srcdir` | Directory containing extracted source files |
+| `pkgbase` | Base package name (single-package recipes: `pkgname`) |
 | `BUILDDIR` | Top-level build directory |
+| `startdir` | Directory containing the recipe |
 | `MAKEFLAGS` | Make flags from config |
 | `CFLAGS` | C compiler flags from config |
 | `CXXFLAGS` | C++ compiler flags from config |
 | `LDFLAGS` | Linker flags from config |
+
+The lowercase spellings are the makepkg contract used by real PKGBUILDs.
 
 ## Configuration
 
@@ -199,7 +205,7 @@ Configuration file: `~/.config/xpkg/xpkg.conf` (TOML), or any path passed
 via `--config`. Key sections:
 
 - `[options]` - builddir, outdir, sign, sign_key, compress method/level,
-  strip_binaries
+  strip_binaries, source_cache
 - `[environment]` - MAKEFLAGS, CFLAGS, CXXFLAGS, LDFLAGS
 - `[lint]` - enable/disable linting, strict mode
 
@@ -210,6 +216,7 @@ outdir = "."
 strip_binaries = true
 compress = "zstd"       # zstd | gzip | xz
 compress_level = 19
+# source_cache = ""     # empty = ~/.cache/xpkg/sources
 
 [environment]
 makeflags = "-j$(nproc)"

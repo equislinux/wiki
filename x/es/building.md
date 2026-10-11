@@ -2,8 +2,9 @@
 
 > Otros idiomas: [English](../en/building.md)
 
-Esta guía explica cómo construir el ISO en vivo de X desde este repositorio con
-`xbuild.sh` y resume los scripts separados de construcción de rootfs para WSL.
+Esta guía explica cómo construir el ISO en vivo de X desde este repositorio
+con `xbuild.sh`. El rootfs de WSL se construye desde el repositorio dedicado
+`equislinux/wsl`.
 
 ## Prerrequisitos
 
@@ -118,5 +119,5 @@ WSL no se construye desde este repositorio. El flujo canónico vive en:
 | `equislinux/wsl` | `build-rootfs.sh` produce un tarball de rootfs importable (`.tar.gz` + `.sha256`); `install.ps1` lo importa en Windows. Release publicada: `v0.1.0`. |
 | `equislinux/wsl-scripts` | Aprovisionamiento en dos etapas dentro de la distro (`stage-root.sh` / `stage-user.sh`). |
 
-Los dos repositorios de arriba son la fuente de verdad para construir y
-aprovisionar X en WSL.
+Consulta `docs/build-wsl.md` para el resumen; los dos repositorios de arriba
+son la fuente de verdad.

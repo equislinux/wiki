@@ -1,11 +1,9 @@
 # x-scripts — visión general
 
-`x-scripts` es el **payload de aprovisionamiento y CLI** del sistema x. Es el
-repo `equislinux/scripts` (antes el repo `x`) y, junto con el resto de repos de la
-organización `equislinux`, implementa la iniciativa *reboot* que sustituyó el
-instalador gráfico basado en Calamares por aprovisionamiento por scripts
-(mecánica Omarchy, implementación y branding propios). Ver ADR-0001/ADR-0002 en
-`DECISIONS.md` en la raíz del workspace (`x-lnux`).
+`x-scripts` es el **payload de aprovisionamiento y CLI** del sistema X. Es el
+repo `equislinux/scripts` (antes el repo `x`) y sustituyó al instalador gráfico
+basado en Calamares por aprovisionamiento por scripts, con implementación y
+branding propios.
 
 ## Rol en la organización
 
@@ -19,14 +17,18 @@ instalador gráfico basado en Calamares por aprovisionamiento por scripts
 La distro (`x`) consume este repo empaquetado como el paquete `x-scripts`; el
 instalador ejecuta las fases root (`x setup`) durante la instalación y la fase
 de usuario (`x setup --user`) en el primer arranque. El tooling Rust
-(`xpkg`/`xpm`) está fuera de alcance para el empaquetado por ahora (ver el doc
-de packaging y el ROADMAP del workspace).
+(`xpkg`/`xpm`) construye y consume el endpoint nativo `.xp`; el sistema se
+aprovisiona con pacman + `[x]`.
 
 ## Qué aporta este repo
 
 - `install/` — orquestadores de fase para aprovisionamiento de sistema (root) y
-  usuario, con helpers de sync idempotentes.
-- `bin/` — la CLI `x` (dispatcher + subcomandos por convención de nombres).
+  usuario, con helpers de sync idempotentes y los motores de generaciones
+  (`xgen.sh` para snapshots del sistema, `xgen-home.sh` para dotfiles).
+- `bin/` — la CLI `x` (dispatcher + subcomandos por convención de nombres),
+  incluidos `x gen ...` y `x home ...`.
+- `hooks/` — el wrapper `pacman-gen.sh` y los hooks alpm
+  (`hooks/alpm/`, instalados en `/usr/share/libalpm/hooks/`).
 - `skel/`, `etc/`, `config/` — semillas de dotfiles para `/etc/skel`, drop-ins
   de `/etc` y configs de usuario.
 - `hardware/`, `tools/` — módulos opcionales (NVIDIA, QEMU/libvirt, node) y el
@@ -48,9 +50,12 @@ es lo que convierte un Arch recién pacstrapeado en una máquina x aprovisionada
 2. La fase de usuario siembra el home, sincroniza los dotfiles y aprovisiona el
    escritorio (stack Hyprland) **offline** desde un snapshot de config
    vendido.
-3. `x` es la CLI del día a día para temas, migraciones y actualizaciones.
+3. `x` es la CLI del día a día para temas, migraciones y actualizaciones, más
+   **generaciones**: `x gen` versiona el sistema (snapshots booteables,
+   rollback, restore granular) y `x home` versiona los dotfiles del usuario.
 
-Ver `cli.md`, `provisioning.md`, `hyprland.md` y `packaging.md`.
+Ver `cli.md`, `provisioning.md`, `generations.md`, `hyprland.md` y
+`packaging.md`.
 
 ## Fuentes de configuración
 
@@ -65,11 +70,9 @@ para uso offline. Ver `hyprland.md` y ADR-0005.
 
 ## Rama y estado
 
-Los entregables *reboot* de este repo se trackean en **`main`** (rama actual;
-existe un `x/reboot` local de referencia). El seguimiento de fases en el
-`ROADMAP.md` de este repo y del workspace está mayormente completo hasta la
-etapa "distro instalable"; restos de auditoría pendientes para este repo
-incluyen `x-base.packages` sin consumidor, pulido de CLI, más cobertura de
-decisiones viven en los `ROADMAP.md`/`DECISIONS.md` de la raíz del workspace
-(`x-lnux`).
-WSL lives in its dedicated repos: equislinux/wsl and equislinux/wsl-scripts.
+Los entregables de este repo se trackean en **`main`**; el payload se publica
+como `x-scripts` (0.1.0-36) en el repositorio `[x]` y llega a los sistemas
+instalados con `x update`. Restos de auditoría pendientes: `x-base.packages`
+sin consumidor, pulido de CLI y más cobertura de los helpers/fases.
+
+WSL vive en sus repos dedicados: equislinux/wsl y equislinux/wsl-scripts.
