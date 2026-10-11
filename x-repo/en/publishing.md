@@ -41,9 +41,9 @@ this repo.
 
 ### Native .xp packages (xpm/xpkg path)
 
-The `.xp` endpoint under `public/x/x86_64/` is out of scope for this flow: the
-automated native workflow is disabled and kept for reference in
-`docs/build-x-native-workflow.md`.
+The `.xp` endpoint under `public/x/x86_64/` is generated separately with
+`scripts/build-xp.sh` (xpkg builds + gpg signing + `xpkg repo-add`) and deploys with
+the same Pages workflow; see `docs/build-x-native-workflow.md`.
 
 ## 2. Regenerate the repository (repo-add)
 
@@ -69,7 +69,8 @@ The script:
    repo-add -R x.db.tar.gz *.pkg.tar.zst
    cp x.db.tar.gz x.db
    cp x.files.tar.gz x.files
-   sha256sum * > SHA256SUMS
+   rm -f SHA256SUMS SHA256SUMS.sig
+   sha256sum $(find . -maxdepth 1 -type f ! -name 'SHA256SUMS*' -printf '%P\n' | sort) > SHA256SUMS
    ```
 
 Do not edit `x.db` or `SHA256SUMS` by hand; always regenerate them with this script
@@ -122,9 +123,17 @@ The updated packages are now served at:
 ### Caveats
 
 - Do not run two Pages deployment workflows at once; they would overwrite each
-  other's deployment (a `pages` concurrency group is defined in `build.yml`, and
-  `docs/build-x-native-workflow.md` warns the same for the native workflow, which is
-  disabled).
+  other's deployment (a `pages` concurrency group is defined in `build.yml`; the
+  native endpoint is regenerated with `scripts/build-xp.sh` and ships in the same
+  deploy).
 - Keep the repository in sync with its consumers: `x-release` and `x-dev` are
   installed from this repo during the X distro install, and `x-scripts` must match
   the payload revision expected by the installer.
+
+### Signing
+
+The repository is published **signed** with the project key (`X_REPO_SIGN_KEY`
+in `build-packages.sh`). The live ISO and installed target use
+`SigLevel = Required` and embed the key at `/etc/pacman.d/x-repo.pub`. See
+[Signing](signing.md) for the key setup, the keyring export
+(`trustedkeys.gpg` + `signing.pub`) and rotation.

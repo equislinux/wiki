@@ -3,9 +3,7 @@
 ## Top level
 
 ```
-app/                  Next.js portal source (App Router)
-components/           React components used by the portal
-lib/                  Client helpers (i18n dictionary)
+app/                  Next.js page (layout, page and styles)
 packages/             Package sources and build artifacts
 public/               Static content served on GitHub Pages
   repo/x86_64/        [x] pacman repository (db + .pkg.tar.zst tarballs)
@@ -24,8 +22,7 @@ package-local files.
 - `PKGBUILD` — Arch-compatible source descriptor. Built with `makepkg`, produces a
   `.pkg.tar.zst` for the **pacman** repository.
 - `XBUILD` — native descriptor for the **xpkg/xpm** path, produces an `.xp` package.
-  The native workflow that consumed it is currently disabled; kept for reference in
-  `docs/build-x-native-workflow.md`.
+  Built and published by `scripts/build-xp.sh` (see `docs/build-x-native-workflow.md`).
 
 The README notes that while `PKGBUILD` is kept for legacy Arch tooling, `XBUILD` is the
 native path for `xpkg`/`xpm`.
@@ -40,8 +37,14 @@ native path for `xpkg`/`xpm`.
   `/usr/bin/x-dev-env` and helpers under `/usr/share/x-dev/` (shell aliases,
   NVIDIA/QEMU/Node setup scripts). Depends on `zsh git base-devel curl wget`.
   `install=x-dev.install` runs the post-install logic.
+- **`opencode-bin`** — official prebuilt binary of the opencode CLI
+  (`anomalyco/opencode`, `1.18.34`), redistributed so `agents=yes` and
+  `x agent` users get a working agent without AUR. `provides`/`conflicts`
+  `opencode`; the tarball is checksummed in the PKGBUILD.
 
-Only these two are built by `build-packages.sh` from their `PKGBUILD` today.
+The pacman `[x]` artifacts are built with `build-packages.sh` (`makepkg` +
+`repo-add`); the native `.xp` endpoint is built with `scripts/build-xp.sh`
+(`xpkg`). Recipes use `PKGBUILD` (Arch-compatible) or `XBUILD` (native).
 
 ### x-scripts: imported artifact, no source here
 
@@ -49,20 +52,18 @@ Only these two are built by `build-packages.sh` from their `PKGBUILD` today.
 repo `equislinux/scripts` under `scripts/packaging/` and packages the whole provisioning
 payload (phases, CLI `x`, configs). The resulting tarball is built there and **imported**
 into this repo, committed under `public/repo/x86_64/` (currently
-`x-scripts-0.1.0-13-any.pkg.tar.zst`).
+`x-scripts-0.1.0-36-any.pkg.tar.zst`).
 
 - There is no `packages/x-scripts/` source directory here.
 - The published artifact and the `PKGBUILD` in `scripts/packaging/` are aligned at
-  `0.1.0-13` (the equisdots desktop snapshot). `build-packages.sh` imports the
+  `0.1.0-36` (the current provisioning payload). `build-packages.sh` imports the
   sibling build automatically; re-run it when republishing the payload.
 
-### Prebuilt artifacts, no sources
+### Recipes only
 
-- `packages/xpm/`, `packages/xpkg/` — committed `.xp` binaries (with `.sig` files).
-- `packages/xfetch/`, `packages/xtop/` — committed `.pkg.tar.zst` binaries.
-
-These are leftovers of the native packaging path, not sources. The native workflow that
-regenerated them from upstream repos is disabled (see `docs/build-x-native-workflow.md`).
+`packages/*/` hold build recipes (`PKGBUILD`, `XBUILD` and helper files); built
+binaries live only in the generated repositories (`public/repo/x86_64` for pacman,
+`public/x/x86_64` for xpm).
 
 ## public/repo/x86_64/ — the [x] pacman repository
 
@@ -72,7 +73,7 @@ This directory is the pacman-facing repository. Files present:
 |---|---|
 | `x.db`, `x.db.tar.gz` | Package database (`x.db` is the uncompressed copy of `x.db.tar.gz`). |
 | `x.files`, `x.files.tar.gz` | File-list database for `pacman -F`. |
-| `*.pkg.tar.zst` | The packages: `x-release-1.0-8`, `x-dev-1.0-2`, `x-scripts-0.1.0-13`, `xpm-0.1.0-3`. |
+| `*.pkg.tar.zst` | The packages: `x-release-1.0-8`, `x-dev-1.0-2`, `x-scripts-0.1.0-36`, `xpm-0.1.0-3`, `xfetch-bin-1.0.0-1`, `xtop-git-r35.cb17bb7-1`, `opencode-bin-1.18.34-1`. |
 | `SHA256SUMS` | Checksums over every file in the directory. |
 | `signing.pub`, `trustedkeys.gpg` | Signing/trust material consumed by the native endpoint. |
 
@@ -95,7 +96,8 @@ repo-add -R x.db.tar.gz *.pkg.tar.zst
 rm -f x.db x.files
 cp x.db.tar.gz x.db
 cp x.files.tar.gz x.files
-sha256sum * > SHA256SUMS
+rm -f SHA256SUMS SHA256SUMS.sig
+sha256sum $(find . -maxdepth 1 -type f ! -name 'SHA256SUMS*' -printf '%P\n' | sort) > SHA256SUMS
 ```
 
 - `repo-add` creates `x.db.tar.gz` and `x.files.tar.gz` from the `.pkg.tar.zst` files.
@@ -103,14 +105,18 @@ sha256sum * > SHA256SUMS
   so entries for packages that no longer exist are dropped too.
 - `x.db`/`x.files` are plain copies of the `.tar.gz` files so pacman can read them
   directly.
-- No signing flag is passed today, so the database is regenerated unsigned.
+- With `X_REPO_SIGN_KEY` set, `repo-add -s` signs the database and every artifact
+  (see `signing.md`); without a key the repository is published unsigned and a
+  warning is printed.
 - `SHA256SUMS` is regenerated from every file in the directory.
 
 ## public/x/x86_64/ — native .xp endpoint
 
-Companion endpoint for `xpm`. It holds `.xp` packages (`xpkg`, `xpm`, `x-release`),
-its own database (`x.db.tar.gz`, `x.files.tar.gz`), `signing.pub`/`trustedkeys.gpg` and
-a `SHA256SUMS`. It was generated by the disabled native workflow and is served at
+Companion endpoint for `xpm`. It holds `.xp` packages (xpm, xpkg, x-release, x-dev,
+xfetch-bin, xtop-git, opencode-bin, x-scripts), its own database (`x.db.tar.gz`,
+`x.files.tar.gz` plus `x.db`/`x.files` copies), per-file signatures, `history.json`,
+`signing.pub`/`trustedkeys.gpg` and a `SHA256SUMS`. Regenerate it with
+`scripts/build-xp.sh`; it deploys with the same Pages workflow. Served at
 `https://equislinux.github.io/x-repo/x/x86_64/`. The documented `xpm` repository URL is
 `https://equislinux.github.io/x-repo/x/$arch`.
 
@@ -122,8 +128,10 @@ Local script (run from the repo root, requires an Arch-like environment with
 1. Builds the configured PKGBUILD packages in place (`build_pkgbuild x-release`,
    `build_pkgbuild x-dev`) using `makepkg -cf --noconfirm`. The `build_xbuild` helper
    for the native path is present but commented out.
-2. Copies every `packages/*/*.pkg.tar.zst` into `public/repo/x86_64/` and removes the
-   build artifact afterwards.
+2. Imports `../scripts/packaging/x-scripts-*.pkg.tar.zst` when present, copies the
+   freshly built `x-release`/`x-dev` tarballs into `public/repo/x86_64/` and removes
+   the build artifacts afterwards (the committed leftovers under the other
+   `packages/*` directories are not touched).
 3. Regenerates the pacman database and `SHA256SUMS` as shown above.
 4. Prints the closing reminder:
 
