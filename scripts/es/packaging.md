@@ -10,9 +10,13 @@ workspace, Fase 4.)
 `packaging/PKGBUILD` produce el paquete Arch (`any`, depende de `bash`):
 
 - Instala `bin`, `install`, `skel`, `etc`, `config`, `hardware`, `tools`,
-  `migrations` y `themes` en **`/usr/share/x`**.
+  `migrations`, `themes` y `hooks` en **`/usr/share/x`**.
 - Hace ejecutables todos los `*.sh` (y el dispatcher `x`) bajo
-  `/usr/share/x/{bin,install,hardware,tools}`.
+  `/usr/share/x/{bin,install,hardware,tools,hooks}`.
+- El overlay de `/etc` lo aplica `x setup` (`install/config.sh`). Los hooks de
+  pacman van en el paquete (`hooks/alpm/*.hook` →
+  `/usr/share/libalpm/hooks/`); `hooks/pacman-gen.sh` es el wrapper que llaman
+  (ver `provisioning.md` y `generations.md`).
 - Instala `/usr/bin/x` como symlink a `/usr/share/x/bin/x`.
 - Si existe `packaging/.vendor/x-config`, sus contenidos se fusionan en
   `/usr/share/x/config` (el snapshot offline del escritorio que usa

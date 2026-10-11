@@ -125,8 +125,10 @@ xpm Q [FILTER] [OPTIONS]
 | `--orphans` | `-t` | Paquetes huérfanos (ya no requeridos) |
 | `--upgrades` | `-u` | Paquetes con actualizaciones disponibles |
 
-Nota de implementación: `query` (incluido `--orphans`) está implementado; la detección de
-huérfanos recorre las aristas de dependencia registradas en la base local al instalar.
+Nota de implementación: implementado contra las bases local y sync (filtro por nombre más
+`--explicit`, `--deps` y `--upgrades`). `--orphans` lista paquetes de dependencia que ningún
+paquete explícito requiere, usando las aristas `depends`/`provides` registradas al instalar;
+las entradas legacy sin registro se omiten.
 
 ### `search` — Buscar paquetes
 
@@ -141,8 +143,8 @@ xpm Ss <QUERY> [OPTIONS]
 |------|-------|-------------|
 | `--local` | `-l` | Busca en la base de datos local en lugar de en las de sync |
 
-Nota de implementación: implementado — busca por nombre, descripción y provides en las bases
-sync o local.
+Nota de implementación: implementado como match case-insensitive sobre nombre, descripción y
+provides; `--local` matchea nombres de paquetes instalados.
 
 ### `info` — Información de paquete
 
@@ -157,7 +159,8 @@ xpm Si <PACKAGE> [OPTIONS]
 |------|-------|-------------|
 | `--local` | `-l` | Consulta la base de datos local en lugar de las de sync |
 
-Nota de implementación: implementado contra las bases sync o local.
+Nota de implementación: implementado; combina la entrada instalada con la entrada sync de mayor
+prioridad, y `--local` limita la salida a la base instalada.
 
 ### `files` — Listar archivos de un paquete
 
@@ -168,7 +171,22 @@ xpm files <PACKAGE>
 xpm Ql <PACKAGE>
 ```
 
-Nota de implementación: implementado contra las listas de archivos de la base local.
+Nota de implementación: implementado; lee el manifiesto `files` registrado al instalar (vacío
+para instalaciones legacy).
+
+### `history`, `rollback`, `diff` — Journal y generaciones
+
+- `xpm history [--json]` — transacciones registradas, la más nueva primero. Las terminadas
+  enlazan la generación que produjeron (`gen:NNNN`, si el directorio de estado es legible).
+- `xpm rollback [--last | --journal <ID>] [--dry-run]` — reaplica la inversa de una transacción
+  exitosa usando la caché de paquetes; aborta antes de tocar nada si falta un paquete viejo.
+- `xpm diff <GENERATION> [--json]` — compara los paquetes instalados contra el `packages.tsv`
+  de una generación (`current` resuelve el id por defecto).
+
+Los archivos de configuración declarados con `backup` en `.PKGINFO` siguen la semántica de
+pacman: `.pacnew` al instalar/actualizar y `.pacsave` al eliminar (se desactiva con `--nosave`).
+Los hooks estilo pacman de `/usr/share/libalpm/hooks` y `/etc/pacman.d/hooks` corren alrededor de
+cada transacción.
 
 ### `repo` — Gestión de repositorios
 
@@ -237,8 +255,8 @@ raíz de instalación no es `/`, xpm activa la integración de shell y crea shim
 ## Variables de entorno y códigos de salida
 
 `RUST_LOG` se respeta a través del `EnvFilter` de `tracing-subscriber` para controlar la
-verbosidad de los logs. `docs/CLI.md` documenta además `XPM_CONFIG`, `XPM_CACHE_DIR` y
-`NO_COLOR`.
+verbosidad de los logs. `docs/CLI.md` documenta además `XPM_CONFIG`, `XPM_CACHE_DIR`,
+`XPM_HOOKS_DIR`, `XPM_ALPM_HOOKS_DIRS`, `X_GEN_STATE` y `NO_COLOR`.
 
 `docs/CLI.md` documenta una matriz de códigos de salida (0 éxito, 1 error general, 2 error de
 uso, hasta 7 base de datos bloqueada). Nota: esa matriz es intención documentada más que un

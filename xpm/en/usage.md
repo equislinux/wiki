@@ -122,8 +122,10 @@ xpm Q [FILTER] [OPTIONS]
 | `--orphans` | `-t` | Orphan packages (no longer required) |
 | `--upgrades` | `-u` | Packages with available updates |
 
-Implementation note: `query` (including `--orphans`) is implemented; orphan detection walks the
-dependency edges recorded in the local database at install time.
+Implementation note: implemented against the local and sync databases (name filter plus
+`--explicit`, `--deps` and `--upgrades`). `--orphans` lists dependency packages that no
+explicitly installed package requires, using the `depends`/`provides` edges recorded at install
+time; legacy entries without a record are skipped.
 
 ### `search` — Search packages
 
@@ -138,8 +140,8 @@ xpm Ss <QUERY> [OPTIONS]
 |------|-------|-------------|
 | `--local` | `-l` | Search in the local database instead of the sync databases |
 
-Implementation note: implemented — matches name, description and provides in the sync or local
-databases.
+Implementation note: implemented as a case-insensitive match over name, description and
+provides; `--local` matches installed package names.
 
 ### `info` — Package information
 
@@ -154,7 +156,8 @@ xpm Si <PACKAGE> [OPTIONS]
 |------|-------|-------------|
 | `--local` | `-l` | Query the local database instead of the sync databases |
 
-Implementation note: implemented against the sync or local databases.
+Implementation note: implemented; merges the installed entry with the highest-priority sync
+entry, and `--local` limits the output to the installed database.
 
 ### `files` — List package files
 
@@ -165,7 +168,22 @@ xpm files <PACKAGE>
 xpm Ql <PACKAGE>
 ```
 
-Implementation note: implemented against the local database file lists.
+Implementation note: implemented; reads the `files` manifest recorded at install time (empty
+for legacy installs).
+
+### `history`, `rollback`, `diff` — Journal and generations
+
+- `xpm history [--json]` — recorded transactions, newest first. Finished entries link the
+  generation they produced (`gen:NNNN`, when the state directory is readable).
+- `xpm rollback [--last | --journal <ID>] [--dry-run]` — replay the inverse of a successful
+  transaction using the package cache; aborts before changing anything if an old package file
+  is missing.
+- `xpm diff <GENERATION> [--json]` — compare the installed packages against a generation's
+  `packages.tsv` (`current` resolves the default id).
+
+Configuration files declared with `backup` in `.PKGINFO` follow pacman semantics: `.pacnew` on
+install/upgrade and `.pacsave` on removal (disable with `--nosave`). Pacman-style ALPM hooks
+from `/usr/share/libalpm/hooks` and `/etc/pacman.d/hooks` run around every transaction.
 
 ### `repo` — Repository management
 
@@ -234,7 +252,8 @@ installation root is not `/`, xpm enables shell integration and creates command 
 ## Environment variables and exit codes
 
 `RUST_LOG` is honoured through `tracing-subscriber`'s `EnvFilter` to control log verbosity.
-`docs/CLI.md` additionally documents `XPM_CONFIG`, `XPM_CACHE_DIR`, and `NO_COLOR`.
+`docs/CLI.md` additionally documents `XPM_CONFIG`, `XPM_CACHE_DIR`, `XPM_HOOKS_DIR`,
+`XPM_ALPM_HOOKS_DIRS`, `X_GEN_STATE`, and `NO_COLOR`.
 
 `docs/CLI.md` documents an exit-code matrix (0 success, 1 general error, 2 usage error, up to 7
 database locked). Note that this matrix is documented intent rather than an enforced contract in
