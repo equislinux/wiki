@@ -3,9 +3,7 @@
 ## Nivel superior
 
 ```
-app/                  Fuente del portal Next.js (App Router)
-components/           Componentes React usados por el portal
-lib/                  Helpers de cliente (diccionario i18n)
+app/                  Página Next.js (layout, page y estilos)
 packages/             Fuentes de paquetes y artefactos de build
 public/               Contenido estático servido en GitHub Pages
   repo/x86_64/        Repositorio [x] de pacman (db + tarballs .pkg.tar.zst)
@@ -24,8 +22,7 @@ ambos, además de los archivos propios del paquete.
 - `PKGBUILD` — descriptor de fuente compatible con Arch. Se construye con `makepkg` y
   produce un `.pkg.tar.zst` para el repositorio de **pacman**.
 - `XBUILD` — descriptor nativo para la vía **xpkg/xpm**, produce un paquete `.xp`.
-  El workflow nativo que lo consumía está desactivado; se conserva como referencia en
-  `docs/build-x-native-workflow.md`.
+  Lo construye y publica `scripts/build-xp.sh` (ver `docs/build-x-native-workflow.md`).
 
 El README señala que mientras `PKGBUILD` se mantiene para el tooling legacy de Arch,
 `XBUILD` es la vía nativa para `xpkg`/`xpm`.
@@ -41,8 +38,16 @@ El README señala que mientras `PKGBUILD` se mantiene para el tooling legacy de 
   `/usr/bin/x-dev-env` y helpers bajo `/usr/share/x-dev/` (aliases de shell, scripts
   de setup de NVIDIA/QEMU/Node). Depende de `zsh git base-devel curl wget`.
   `install=x-dev.install` ejecuta la lógica post-instalación.
+- **`opencode-bin`** — binario oficial precompilado del CLI opencode
+  (`anomalyco/opencode`, `1.18.34`), redistribuido para que `agents=yes` y los
+  usuarios de `x agent` tengan agente sin recurrir a AUR.
+  `provides`/`conflicts` `opencode`; el tarball va verificado por checksum en el
+  PKGBUILD.
 
-Hoy solo estos dos se construyen desde su `PKGBUILD` con `build-packages.sh`.
+Los artefactos del repo pacman `[x]` se construyen con `build-packages.sh`
+(`makepkg` + `repo-add`); el endpoint nativo `.xp` se construye con
+`scripts/build-xp.sh` (`xpkg`). Las recetas usan `PKGBUILD` (compatible Arch) o
+`XBUILD` (nativo).
 
 ### x-scripts: artefacto importado, sin fuente aquí
 
@@ -50,21 +55,18 @@ Hoy solo estos dos se construyen desde su `PKGBUILD` con `build-packages.sh`.
 hermano `equislinux/scripts` bajo `scripts/packaging/` y empaqueta todo el payload de
 aprovisionamiento (fases, CLI `x`, configs). El tarball resultante se construye allí y
 se **importa** a este repo, commiteado bajo `public/repo/x86_64/` (actualmente
-`x-scripts-0.1.0-13-any.pkg.tar.zst`).
+`x-scripts-0.1.0-36-any.pkg.tar.zst`).
 
 - No existe un directorio de fuente `packages/x-scripts/` aquí.
 - El artefacto publicado y el `PKGBUILD` de `scripts/packaging/` están alineados en
-  `0.1.0-13` (el snapshot del escritorio equisdots). `build-packages.sh` importa el
+  `0.1.0-36` (el payload de aprovisionamiento actual). `build-packages.sh` importa el
   build hermano automáticamente; vuelve a ejecutarlo al republicar el payload.
 
-### Artefactos preconstruidos, sin fuentes
+### Solo recetas
 
-- `packages/xpm/`, `packages/xpkg/` — binarios `.xp` commiteados (con archivos `.sig`).
-- `packages/xfetch/`, `packages/xtop/` — binarios `.pkg.tar.zst` commiteados.
-
-Son restos de la vía de empaquetado nativa, no fuentes. El workflow nativo que los
-regeneraba desde repos upstream está desactivado (ver
-`docs/build-x-native-workflow.md`).
+`packages/*/` guarda recetas de build (`PKGBUILD`, `XBUILD` y auxiliares); los
+binarios viven solo en los repositorios generados (`public/repo/x86_64` para pacman,
+`public/x/x86_64` para xpm).
 
 ## public/repo/x86_64/ — el repositorio [x] de pacman
 
@@ -74,7 +76,7 @@ Este directorio es el repositorio orientado a pacman. Archivos presentes:
 |---|---|
 | `x.db`, `x.db.tar.gz` | Base de datos de paquetes (`x.db` es la copia sin comprimir de `x.db.tar.gz`). |
 | `x.files`, `x.files.tar.gz` | Base de datos de listas de archivos para `pacman -F`. |
-| `*.pkg.tar.zst` | Los paquetes: `x-release-1.0-8`, `x-dev-1.0-2`, `x-scripts-0.1.0-13`, `xpm-0.1.0-3`. |
+| `*.pkg.tar.zst` | Los paquetes: `x-release-1.0-8`, `x-dev-1.0-2`, `x-scripts-0.1.0-36`, `xpm-0.1.0-3`, `xfetch-bin-1.0.0-1`, `xtop-git-r35.cb17bb7-1`, `opencode-bin-1.18.34-1`. |
 | `SHA256SUMS` | Checksums de todos los archivos del directorio. |
 | `signing.pub`, `trustedkeys.gpg` | Material de firma/confianza consumido por el endpoint nativo. |
 
@@ -97,7 +99,8 @@ repo-add -R x.db.tar.gz *.pkg.tar.zst
 rm -f x.db x.files
 cp x.db.tar.gz x.db
 cp x.files.tar.gz x.files
-sha256sum * > SHA256SUMS
+rm -f SHA256SUMS SHA256SUMS.sig
+sha256sum $(find . -maxdepth 1 -type f ! -name 'SHA256SUMS*' -printf '%P\n' | sort) > SHA256SUMS
 ```
 
 - `repo-add` crea `x.db.tar.gz` y `x.files.tar.gz` a partir de los `.pkg.tar.zst`.
@@ -105,15 +108,18 @@ sha256sum * > SHA256SUMS
   directorio, así que también se eliminan entradas de paquetes que ya no existen.
 - `x.db`/`x.files` son copias planas de los `.tar.gz` para que pacman pueda leerlos
   directamente.
-- Hoy no se pasa bandera de firma, así que la base se regenera sin firmar.
+- Con `X_REPO_SIGN_KEY` definida, `repo-add -s` firma la base y todos los artefactos
+  (ver `signing.md`); sin clave, el repo se publica sin firmar y se avisa por stderr.
 - `SHA256SUMS` se regenera a partir de todos los archivos del directorio.
 
 ## public/x/x86_64/ — endpoint nativo .xp
 
 Endpoint complementario para `xpm`. Contiene paquetes `.xp` (`xpkg`, `xpm`,
-`x-release`), su propia base de datos (`x.db.tar.gz`, `x.files.tar.gz`),
-`signing.pub`/`trustedkeys.gpg` y un `SHA256SUMS`. Fue generado por el workflow nativo
-desactivado y se sirve en `https://equislinux.github.io/x-repo/x/x86_64/`. La URL de
+`x-release`, `x-dev`, `xfetch-bin`, `xtop-git`, `opencode-bin`, `x-scripts`), su
+propia base de datos (`x.db.tar.gz`, `x.files.tar.gz` + copias `x.db`/`x.files`),
+firmas por archivo, `history.json`, `signing.pub`/`trustedkeys.gpg` y un
+`SHA256SUMS`. Se regenera con `scripts/build-xp.sh` y se despliega con el mismo
+workflow de Pages. Se sirve en `https://equislinux.github.io/x-repo/x/x86_64/`. La URL de
 repositorio documentada para `xpm` es `https://equislinux.github.io/x-repo/x/$arch`.
 
 ## build-packages.sh
@@ -124,8 +130,10 @@ Script local (se ejecuta desde la raíz del repo; requiere un entorno tipo Arch 
 1. Construye en su sitio los paquetes PKGBUILD configurados
    (`build_pkgbuild x-release`, `build_pkgbuild x-dev`) con `makepkg -cf --noconfirm`.
    El helper `build_xbuild` para la vía nativa existe pero está comentado.
-2. Copia todos los `packages/*/*.pkg.tar.zst` a `public/repo/x86_64/` y elimina el
-   artefacto de build después.
+2. Importa `../scripts/packaging/x-scripts-*.pkg.tar.zst` cuando existe, copia los
+   tarballs recién construidos de `x-release`/`x-dev` a `public/repo/x86_64/` y
+   elimina después esos artefactos de build (los binarios commiteados bajo los demás
+   directorios `packages/*` no se tocan).
 3. Regenera la base de datos de pacman y `SHA256SUMS` como se muestra arriba.
 4. Imprime el recordatorio final:
 
