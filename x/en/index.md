@@ -31,7 +31,8 @@ The distribution is under active development. Signed ISOs are published on
 SourceForge (the stable link is
 <https://equislinux.github.io/web/download/latest/>), and both package
 channels — the pacman `[x]` repository and the native `.xp` endpoint — are
-live. See `ROADMAP.md` and `docs/project-state.md`.
+live. The text installer offers Hyprland, niri, KDE Plasma or a console-only
+system. See `ROADMAP.md` and `docs/project-state.md`.
 
 ## How this repository maps to the organization
 
@@ -48,7 +49,7 @@ distro) or to an `x` scripts repo must be read with this mapping in mind:
 | `equislinux/xpkg` | X packaging tool for developers (Rust). |
 | `equislinux/wsl` / `equislinux/wsl-scripts` | WSL rootfs (published release `v0.1.0`) and its first-run setup. |
 | `equislinux/wiki` / `equislinux/web` | Documentation sources (en/es) and the documentation portal. |
-| `equisdots/*` | Org that owns the desktop stack (Hyprland Lua config, Quickshell shell, palettes, engines, SDDM login) consumed read-only by the Hyprland setup tool in `scripts`; its official installer is `equisdots/dots`. |
+| `equisdots/*` | Org that owns the desktop stacks (Hyprland Lua config, niri config, Quickshell shell, palettes, engines, SDDM login) consumed read-only by the desktop setup tools in `scripts`. Official installers: `equisdots/dots` (Hyprland) and `equisdots/niri-meta` (niri). |
 
 Related documentation in this repository:
 
@@ -72,9 +73,12 @@ Related documentation in this repository:
   records bootable snapshots with manifests, rollback and granular restore
   (`x gen`), plus dotfile generations (`x home`) and pacman hooks. See
   [Generations](generations.md).
-- **Offline provisioning payload.** The `x-scripts` package and the Hyprland
-  config snapshot ship inside the ISO, so provisioning does not depend on
-  downloading them during install.
+- **Desktop choice.** Hyprland (`equisdots/dots`), niri
+  (`equisdots/niri-meta`) or KDE Plasma with X branding; a console-only
+  install is also available. The choice is made in the text installer.
+- **Provisioning payload.** The `x-scripts` package ships inside the ISO. The
+  Hyprland snapshot remains available for legacy offline installs; the new
+  selector installs Hyprland, niri and KDE Plasma online.
 - **WSL support.** The rootfs is built in the dedicated `equislinux/wsl` repository
   (release `v0.1.0`) and provisioned with `equislinux/wsl-scripts`.
 

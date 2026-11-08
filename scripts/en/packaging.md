@@ -22,7 +22,7 @@ currently out of scope for packaging; see the workspace ROADMAP, Phase 4.)
   `tools/hyprland-install.sh`). There are **no remote `source=()` entries**: the
   snapshot is vendored in-repo and never fetched at build time.
 
-Version metadata: `pkgver=0.1.0`, `pkgrel` bumped per iteration (currently 13
+Version metadata: `pkgver=0.1.0`, `pkgrel` bumped per iteration (currently 47
 in the PKGBUILD). A leftover build artifact (`*.pkg.tar.zst`) may sit in the
 directory but is stale and git-ignored; rebuild produces the current pkgrel.
 
@@ -48,6 +48,11 @@ makepkg   # requires packaging/.vendor/x-config to be present
 - `xscriptor-colors/terminal` → kitty only (`kitty.conf` + `themes/`) and
   starship (`prompts/starship`: template + themes).
 - `xscriptor-colors/nvim` → the whole `nvim` tree.
+
+niri is **not** vendored: `tools/niri-install.sh` clones
+`equisdots/niri-meta` online and runs `dotsniri setup -y`. KDE Plasma branding
+is a separate `x-kde-settings` package bundled in the live ISO, not part of
+this payload.
 
 Behavior:
 

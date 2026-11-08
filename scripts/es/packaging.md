@@ -24,7 +24,7 @@ workspace, Fase 4.)
   snapshot se vende en el repo y nunca se descarga en el build.
 
 Metadatos de versión: `pkgver=0.1.0`, `pkgrel` se sube por iteración
-(actualmente 13 en el PKGBUILD). Puede quedar un artefacto de build antiguo
+(actualmente 47 en el PKGBUILD). Puede quedar un artefacto de build antiguo
 (`*.pkg.tar.zst`) en el directorio, pero es stale y está git-ignored; al
 reconstruir se produce el pkgrel actual.
 
@@ -50,7 +50,11 @@ construidos.
   instalador oficial y trae el `install-xwww.sh` standalone).
 - `xscriptor-colors/terminal` → solo kitty (`kitty.conf` + `themes/`) y
   starship (`prompts/starship`: plantilla + temas).
-- `xscriptor-colors/nvim` → todo el árbol de `nvim`.
+- `xscriptor-colors/nvim` → el árbol completo de `nvim`.
+
+niri **no** se vende: `tools/niri-install.sh` clona `equisdots/niri-meta` online
+y ejecuta `dotsniri setup -y`. El branding de KDE Plasma es un paquete aparte,
+`x-kde-settings`, incluido en el ISO, no parte de este payload.
 
 Comportamiento:
 

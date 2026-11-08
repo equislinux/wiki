@@ -38,7 +38,8 @@ La distribución está en desarrollo activo. Los ISOs firmados se publican en
 SourceForge (el enlace estable es
 <https://equislinux.github.io/web/download/latest/>) y los dos canales de
 paquetes —el repositorio pacman `[x]` y el endpoint nativo `.xp`— están vivos.
-Consulta `ROADMAP.md` y `docs/project-state.md`.
+El instalador de texto ofrece Hyprland, niri, KDE Plasma o un sistema solo de
+consola. Consulta `ROADMAP.md` y `docs/project-state.md`.
 
 ## Cómo se mapea este repositorio en la organización
 
@@ -55,7 +56,7 @@ GitHub. Los nombres cambiaron con el tiempo, así que las referencias antiguas a
 | `equislinux/xpkg` | Herramienta de empaquetado de X para desarrolladores (Rust). |
 | `equislinux/wsl` / `equislinux/wsl-scripts` | Rootfs de WSL (release publicado `v0.1.0`) y su setup de primer arranque. |
 | `equislinux/wiki` / `equislinux/web` | Fuentes de documentación (en/es) y el portal de documentación. |
-| `equisdots/*` | Org dueña del stack de escritorio (config Lua de Hyprland, shell Quickshell, paletas, motores, login SDDM) consumido de solo lectura por la herramienta de instalación de Hyprland en `scripts`; su instalador oficial es `equisdots/dots`. |
+| `equisdots/*` | Org dueña de los stacks de escritorio (config Lua de Hyprland, config de niri, shell Quickshell, paletas, motores, login SDDM) consumidos de solo lectura por las herramientas de escritorio en `scripts`. Instaladores oficiales: `equisdots/dots` (Hyprland) y `equisdots/niri-meta` (niri). |
 
 Documentación relacionada en este repositorio:
 
@@ -76,9 +77,12 @@ Documentación relacionada en este repositorio:
 - **Instalación desatendida.** El ISO incluye una entrada de arranque
   `autoinstall` (hotkey `a`, `xauto=1`) para un disco etiquetado `cidata` con
   un `x-install.json`.
-- **Payload de aprovisionamiento offline.** El paquete `x-scripts` y la
-  instantánea de la configuración de Hyprland viajan dentro del ISO, de modo
-  que el aprovisionamiento no depende de descargarlos durante la instalación.
+- **Elección de escritorio.** Hyprland (`equisdots/dots`), niri
+  (`equisdots/niri-meta`) o KDE Plasma con branding X; también se puede
+  instalar sin escritorio. La elección se hace en el instalador de texto.
+- **Payload de aprovisionamiento.** El paquete `x-scripts` viaja dentro del
+  ISO. La instantánea de Hyprland sigue disponible para instalaciones legacy
+  offline; el selector nuevo instala Hyprland, niri y KDE Plasma online.
 - **Soporte WSL.** El rootfs se construye en el repositorio dedicado
   `equislinux/wsl` (release `v0.1.0`) y se aprovisiona con `equislinux/wsl-scripts`.
 

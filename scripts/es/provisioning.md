@@ -42,6 +42,12 @@ X_NODE=1 bash install/user.sh
 X_HYPRLAND=0 bash install/user.sh
 ```
 
+niri y KDE Plasma **no** forman parte de esta fase de usuario. El instalador
+de texto ejecuta `tools/niri-install.sh` para niri (online
+`equisdots/niri-meta`) e instala `plasma-meta` + `kde-applications` + el
+paquete incluido `x-kde-settings` para KDE. `X_HYPRLAND` solo controla el
+setup de Hyprland.
+
 ## Helpers
 
 `install/helpers/common.sh` — helpers de log y privilegios; exporta `X_ROOT`:
@@ -116,6 +122,8 @@ Ver la tabla completa en `cli.md`. Los que importan por fase:
 - Config/seed: `X_SKEL_DIR`, `X_CONFIG_SEED`, `X_TS`.
 - Hardware: `X_HW_AUTO`, `X_HW_NVIDIA`, `X_HW_QEMU`.
 - Usuario: `X_NODE`, `X_HYPRLAND`.
+- Niri, solo instalador: `X_NIRI_REF`, `X_NIRI_CACHE_DIR`, `X_NIRI_DRYRUN`,
+  `X_NIRI_SKIP_LOGIN` (ver `niri.md`).
 - Global: `X_DRY_RUN`.
 
 ## Puntos de entrada

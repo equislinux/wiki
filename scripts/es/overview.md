@@ -31,8 +31,9 @@ aprovisiona con pacman + `[x]`.
   (`hooks/alpm/`, instalados en `/usr/share/libalpm/hooks/`).
 - `skel/`, `etc/`, `config/` — semillas de dotfiles para `/etc/skel`, drop-ins
   de `/etc` y configs de usuario.
-- `hardware/`, `tools/` — módulos opcionales (NVIDIA, QEMU/libvirt, node) y el
-  tool de setup del escritorio Hyprland.
+- `hardware/`, `tools/` — módulos opcionales (NVIDIA, QEMU/libvirt, node) y las
+  herramientas de setup de los escritorios Hyprland y niri. KDE Plasma lo
+  instala el instalador de texto, no este payload.
 - `migrations/`, `themes/` — migraciones por usuario y temas por paleta.
 - `packaging/` — el PKGBUILD de `x-scripts` y el generador del snapshot de
   config offline (`vendor-config.sh`).
@@ -48,31 +49,36 @@ es lo que convierte un Arch recién pacstrapeado en una máquina x aprovisionada
 1. Las fases root configuran el sistema (skel, drop-ins de `/etc`, módulos de
    hardware, servicios).
 2. La fase de usuario siembra el home, sincroniza los dotfiles y aprovisiona el
-   escritorio (stack Hyprland) **offline** desde un snapshot de config
-   vendido.
+   escritorio: Hyprland (snapshot offline u online vía `equisdots/dots`) o
+   niri (online vía `equisdots/niri-meta`). KDE Plasma lo gestiona el
+   instalador de texto.
 3. `x` es la CLI del día a día para temas, migraciones y actualizaciones, más
    **generaciones**: `x gen` versiona el sistema (snapshots booteables,
    rollback, restore granular) y `x home` versiona los dotfiles del usuario.
 
-Ver `cli.md`, `provisioning.md`, `generations.md`, `hyprland.md` y
+Ver `cli.md`, `provisioning.md`, `generations.md`, `hyprland.md`, `niri.md` y
 `packaging.md`.
 
 ## Fuentes de configuración
 
 Las configs de escritorio **no** se mantienen en esta organización: la org
-equisdots es dueña del stack (`equisdots/hyprland`, `equisdots/shell`,
-`equisdots/palettes`, `equisdots/theme-sync`, `equisdots/davincix`,
-`equisdots/timex`, `equisdots/login`, `equisdots/dots`, rama `main`) y las
-configs de apps vienen de `xscriptor-colors/terminal` (kitty/starship) y
-`xscriptor-colors/nvim`. Todas se usan de solo lectura; el instalador oficial
-es `equisdots/dots`. Un snapshot de todo el stack se vende dentro del paquete
-para uso offline. Ver `hyprland.md` y ADR-0005.
+equisdots es dueña de los stacks (`equisdots/hyprland`, `equisdots/niri`,
+`equisdots/niri-shell`, `equisdots/niri-login`, `equisdots/niri-meta`, más los
+repos compartidos `shell`, `palettes`, `theme-sync`, `davincix`, `timex` y
+`login`; rama `main`). Las configs de apps vienen de
+`xscriptor-colors/terminal` (kitty/starship) y `xscriptor-colors/nvim`. Todas
+se usan de solo lectura; los instaladores oficiales son `equisdots/dots`
+(Hyprland) y `equisdots/niri-meta` (niri). Solo el stack Hyprland se vende para
+uso offline; niri se instala online. El branding de KDE Plasma vive en el
+paquete `x-kde-settings` de `[x]`. Ver `hyprland.md`, `niri.md` y ADR-0005.
 
 ## Rama y estado
 
-Los entregables de este repo se trackean en **`main`**; el payload se publica
-como `x-scripts` (0.1.0-36) en el repositorio `[x]` y llega a los sistemas
-instalados con `x update`. Restos de auditoría pendientes: `x-base.packages`
-sin consumidor, pulido de CLI y más cobertura de los helpers/fases.
+Los entregables de este repo se trackean en **`main`**. El payload se publica
+como `x-scripts` 0.1.0-47, viaja en el ISO 2026.11.04 y el repositorio público
+`[x]` sirve la misma 0.1.0-47. El paquete también incluye la herramienta no
+interactiva `niri-install.sh` que usa el instalador de texto. Restos de
+auditoría pendientes: `x-base.packages` sin consumidor, pulido de CLI y más
+cobertura de los helpers/fases.
 
 WSL vive en sus repos dedicados: equislinux/wsl y equislinux/wsl-scripts.

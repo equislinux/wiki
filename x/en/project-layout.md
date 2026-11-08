@@ -81,7 +81,7 @@ The text installer shipped in the live image:
 | `autoinstall.sh` | Unattended installer (triggered by `xauto=1` + `cidata` disk). |
 | `ui.sh` | Shared UI helpers used by the other scripts. |
 | `packages.x86_64` | Default manifest for the `full` package profile. |
-| `packages/` | Offline `x-scripts-*.pkg.tar.zst` payload bundled into the live image. |
+| `packages/` | Offline `x-scripts-*.pkg.tar.zst` payload and the `x-kde-settings-*.pkg.tar.zst` branding package bundled into the live image. |
 
 ## Build-critical files
 
