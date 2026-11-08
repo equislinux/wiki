@@ -28,7 +28,7 @@ Los resúmenes son las cabeceras `x:summary` de cada archivo (los muestra
 | Comando | Descripción |
 |---------|-------------|
 | `x setup` | Aprovisiona el sistema como root (`install/system.sh`; config, hardware, login, post-install). Eleva con sudo si hace falta. |
-| `x setup --user` | Aprovisiona al usuario actual (`install/user.sh`; seed del home + sync de config + node e Hyprland opcionales). |
+| `x setup --user` | Aprovisiona al usuario actual (`install/user.sh`; seed del home + sync de config + node e Hyprland opcionales). La elección de niri/KDE se hace en el instalador de texto. |
 | `x theme list` | Lista los temas disponibles bajo `themes/`. |
 | `x theme set <name>` | Aplica un tema: copia `themes/<name>/colors` a `~/.config/x/theme.conf` (con backup del anterior) y registra el tema activo en `~/.local/state/x/theme`. |
 | `x migrate` | Ejecuta las migraciones idempotentes pendientes del usuario. |
@@ -154,7 +154,7 @@ No hay registro central ni paso de registro.
 | `X_GEN_SKIP` | `0` | `1` desactiva las generaciones automáticas en los hooks de setup/update. |
 
 Las variables específicas del setup de Hyprland (`X_HYPR_*`) se documentan en
-`hyprland.md`.
+`hyprland.md`; las del instalador de niri (`X_NIRI_*`), en `niri.md`.
 
 ## Estado
 
@@ -172,7 +172,8 @@ redirijan cada ruta de estado/salida fuera del home real (ver `test/smoke.sh`).
 
 Ejecuta el instalador original de equisdots (`equisdots/dots setup`) desde un
 clon temporal y lo limpia después. Úsalo cuando ya hayas iniciado sesión y el
-setup empaquetado offline no baste. Pedirá la contraseña de sudo cuando el
-script original la necesite.
+setup empaquetado offline de Hyprland no baste. Solo cubre Hyprland; para niri
+usa la opción `niri` del instalador de texto. Pedirá la contraseña de sudo
+cuando el script original la necesite.
 
     x setup --user --online

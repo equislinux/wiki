@@ -81,7 +81,7 @@ El instalador de texto incluido en la imagen en vivo:
 | `autoinstall.sh` | Instalador desatendido (activado por `xauto=1` + disco `cidata`). |
 | `ui.sh` | Utilidades de interfaz compartidas por los demás scripts. |
 | `packages.x86_64` | Manifiesto por defecto del perfil `full`. |
-| `packages/` | Payload offline `x-scripts-*.pkg.tar.zst` incluido en la imagen en vivo. |
+| `packages/` | Payload offline `x-scripts-*.pkg.tar.zst` y el paquete de branding `x-kde-settings-*.pkg.tar.zst` incluidos en la imagen en vivo. |
 
 ## Archivos críticos de la build
 

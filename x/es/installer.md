@@ -123,7 +123,7 @@ están.
    tmpfs.
 5. **Conjunto de paquetes**:
    - Conjunto base: `base base-devel linux linux-firmware sudo networkmanager
-     openssh git jq x-release btrfs-progs xfetch-bin xtop-git kitty pipewire
+     openssh git jq x-release x-wallpapers btrfs-progs xfetch-bin xtop-git kitty pipewire
      pipewire-pulse pipewire-alsa wireplumber alsa-utils sddm zsh`, más
      `grub efibootmgr` para
      GRUB y `cryptsetup` para LUKS. `btrfs-progs` lo requiere el motor de
@@ -132,9 +132,12 @@ están.
    - Perfil `full`: añade todos los paquetes del manifiesto apuntado por
      `X_PKGLIST` (por defecto `/root/x-installer/packages.x86_64`).
    - Perfil `core`: añade solo `vim`.
-   - El perfil `full` con el escritorio Hyprland compila paquetes de AUR
-     (`quickshell-git`, `swayosd-git`, ...): dale al instalador **≥6 GB de
-     RAM**; en máquinas con poca memoria limita los jobs de build.
+   - El setup de Hyprland de equisdots puede compilar paquetes de AUR
+     (`quickshell-git`, `swayosd-git`, ...) según upstream; dale al instalador
+     **≥6 GB de RAM**. niri y KDE Plasma usan paquetes binarios.
+   - El instalador también ofrece un backend para el sistema base: `pacman`
+     (estable, producción) o `xpm` (nativo, experimental). La imagen live cae a
+     pacman cuando su `xpm` no tiene los flags post-parity.
 6. **Preparar los keyrings** y **esperar a la red** (DNS contra
    `geo.mirror.pkgbuild.com`, hasta ~120 s). Después `pacstrap /mnt <pkgs>`
    desde los mirrors oficiales más el repositorio `[x]` firmado (`Required`).
@@ -165,8 +168,8 @@ están.
       `[x]` y después `x agent install --bundle x` corre como el usuario
       destino con `HOME=/home/<user>` (bundle de Xscriptor: agentes, skills y
       comandos para OpenCode).
-11. **Setup de Hyprland** (si `hyprland=yes` u `online`): se crea un drop-in
-    temporal de sudo sin password y se ejecuta
+11. **Setup de Hyprland** (si `desktop=hyprland`; legacy `hyprland=yes` u
+    `online`): se crea un drop-in temporal de sudo sin contraseña y se ejecuta
     `/usr/share/x/tools/hyprland-install.sh` como el usuario destino. El
     drop-in se elimina después.
     - `hyprland=yes` despliega la instantánea offline de equisdots incluida en
@@ -213,13 +216,15 @@ instalación:
 |---|---|
 | `hyprland` | El stack oficial equisdots Hyprland vía `equisdots/dots` (`dots install`, último `main`), más la integración de paquetes/login de X. |
 | `niri` | El stack oficial equisdots niri vía `equisdots/niri-meta` (`dotsniri setup -y`): niri, shell Quickshell, overlays de niri, plugins, configs de apps y la entrada de sesión niri. |
-| `kde` | `plasma-meta` + el grupo `kde-applications` de los repos oficiales y el paquete de branding `x-kde-settings` de `[x]` (colores X Dark, look-and-feel, wallpaper y tema SDDM). |
+| `kde` | `plasma-meta` + el grupo `kde-applications` de los repos oficiales y el paquete de branding `x-kde-settings` (incluido en el ISO; fuente en `[x]`): colores X Dark, look-and-feel, wallpaper y tema SDDM. |
 | `none` | Sin escritorio; solo consola. |
 
 Comportamiento común:
 
 - SDDM es el gestor de sesiones. Hyprland/niri usan el tema SDDM estático de
   equisdots; KDE usa el mismo tema X de `x-kde-settings`.
+- niri necesita una GPU con aceleración EGL/GBM real; en una VM, activa la
+  aceleración 3D (por ejemplo `virtio-vga-gl`/VirGL) o usa Hyprland.
 - El escritorio se instala durante la instalación de texto (requiere red), no
   en el primer arranque. Primero corre el aprovisionamiento de usuario
   (`x setup --user`); después el tool del escritorio despliega el payload.

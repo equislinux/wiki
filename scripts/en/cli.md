@@ -25,7 +25,7 @@ Summaries are the `x:summary` headers of each file (shown by `x help`).
 | Command | Description |
 |---------|-------------|
 | `x setup` | Provisions the system as root (`install/system.sh`; config, hardware, login, post-install). Elevates with sudo when needed. |
-| `x setup --user` | Provisions the current user (`install/user.sh`; home seed + config sync + optional node and Hyprland). |
+| `x setup --user` | Provisions the current user (`install/user.sh`; home seed + config sync + optional node and Hyprland). Desktop selection for niri/KDE happens in the text installer. |
 | `x theme list` | Lists available themes under `themes/`. |
 | `x theme set <name>` | Applies a theme palette: copies `themes/<name>/colors` to `~/.config/x/theme.conf` (backing up the previous one) and records the active theme in `~/.local/state/x/theme`. |
 | `x migrate` | Runs the user's pending idempotent migrations. |
@@ -150,7 +150,8 @@ There is no central registry and no registration step.
 | `X_GEN_SKIP` | `0` | `1` disables automatic generations in the setup/update hooks. |
 
 Hyprland-setup specific variables (`X_HYPR_*`) are documented in
-`hyprland.md`.
+`hyprland.md`; the niri installer variables (`X_NIRI_*`) are documented in
+`niri.md`.
 
 ## State
 
@@ -167,7 +168,8 @@ path away from the real home (see `test/smoke.sh`).
 
 Runs the original equisdots installer (`equisdots/dots setup`) from a
 temporary clone, then cleans up. Use it when already logged in and the offline
-packaged setup is not enough. It asks for the sudo password when the upstream
-script needs it.
+packaged Hyprland setup is not enough. It only covers Hyprland; use the text
+installer's `niri` option for niri. It asks for the sudo password when the
+upstream script needs it.
 
     x setup --user --online

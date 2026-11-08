@@ -4,7 +4,8 @@
 para x. Aprovisiona el stack de escritorio de equisdots para el **usuario
 target** (se niega a correr como root; las operaciones root van por sudo). Lo
 invoca la fase de usuario (`install/user.sh`, controlado por `X_HYPRLAND`,
-activo por defecto) y puede ejecutarse a mano.
+activo por defecto) y puede ejecutarse a mano. Para niri, ver
+[`niri.md`](niri.md).
 
 Objetivos de diseño (ADR-0005):
 
@@ -118,8 +119,9 @@ dots doctor        # comprobar dependencias, clones y rutas instaladas
   (kitty/starship/nvim) desde `xscriptor-colors`. Si falla, el instalador cae
   al snapshot.
 
-El instalador elige el modo con `hyprland=yes` (snapshot) o
-`hyprland=online` (lo último desde GitHub; `hyprland_ref` opcional en el JSON).
+El instalador selecciona Hyprland con `desktop=hyprland` (siempre online;
+`hyprland_ref` opcional en el JSON). Los seeds legacy aún pueden usar
+`hyprland=yes` (snapshot) o `hyprland=online` cuando no hay `desktop`.
 
 ## Flags / entorno
 
