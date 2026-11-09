@@ -75,8 +75,8 @@ paquete `x-kde-settings` de `[x]`. Ver `hyprland.md`, `niri.md` y ADR-0005.
 ## Rama y estado
 
 Los entregables de este repo se trackean en **`main`**. El payload se publica
-como `x-scripts` 0.1.0-47, viaja en el ISO 2026.11.04 y el repositorio público
-`[x]` sirve la misma 0.1.0-47. El paquete también incluye la herramienta no
+como `x-scripts` 0.1.0-48, viaja en el ISO 2026.11.04 y el repositorio público
+`[x]` sirve la misma 0.1.0-48. El paquete también incluye la herramienta no
 interactiva `niri-install.sh` que usa el instalador de texto. Restos de
 auditoría pendientes: `x-base.packages` sin consumidor, pulido de CLI y más
 cobertura de los helpers/fases.

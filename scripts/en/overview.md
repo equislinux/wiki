@@ -74,8 +74,8 @@ See `hyprland.md`, `niri.md` and ADR-0005.
 ## Status
 
 This repo's deliverables are tracked on **`main`**. The payload is published
-as `x-scripts` 0.1.0-47, is bundled in the 2026.11.04 ISO, and the public `[x]`
-repository serves the same 0.1.0-47. The package also ships the non-interactive
+as `x-scripts` 0.1.0-48, is bundled in the 2026.11.04 ISO, and the public `[x]`
+repository serves the same 0.1.0-48. The package also ships the non-interactive
 `niri-install.sh` tool used by the text installer. Remaining audit items:
 `x-base.packages` without a consumer, CLI polish and more coverage for the
 helpers/phases.
